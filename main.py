@@ -85,14 +85,14 @@ example = test[0]
 example_coordinates = example["stroke_coord"]
 
 print(example['char'])
+import copy
+
 for i, coords in example_coordinates.items():
 
-    X,Y = zip(*coords)
-
+    X, Y = zip(*coords)
     X = list(X)
-    y_max = max(Y)
-    y_min = min(Y)
-    Y = [(y_max-y_min)/2 - y for y in Y]
-
-    plt.plot(X,Y, '-')
+    y_max = (max(Y))
+    Y = [-y for y in Y]
+    plt.plot(X, Y, '-')
+    
 plt.show()
