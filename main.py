@@ -17,18 +17,37 @@ with open(filename, "rb") as f:
         reversed_bytes = meaningful_bytes[-1:] + meaningful_bytes[0:1]
         gbk_decoded = reversed_bytes.decode('gbk')
 
+        stroke_number_packed = f.read(2)
+        stroke_number = struct.unpack("<H", stroke_number_packed)[0]
+
+        stroke_coordinates = dict()
+
+        y = None
+        # for i in range(1,stroke_number+1):
+
+        count = 0
+        while y != -1:
+
+            coordinates_list = []
+            x = None
+            while x != -1:
+                count += 1
+                x_packed = f.read(2)
+                x = struct.unpack("<h", x_packed)[0]
+
+                y_packed = f.read(2)
+                y = struct.unpack("<h", y_packed)[0]
+
+                if x != -1:
+                    coordinates_list += (x,y)
+                    stroke_coordinates[count] = coordinates_list
+
+        STOP
+
+        next_y_packed = f.read(2)
+        next_y = struct.unpack("<h", next_y_packed)[0]
         STOP
         width = struct.unpack("<H", f.read(2))[0]
         height = struct.unpack("<H", f.read(2))[0]
         photo_bytes = struct.unpack("{}B".format(height * width), f.read(height * width))
-
-        # # Comes out as a tuple of chars. Need to be combined. Encoded as gb2312, gotta convert to unicode.
-        # label = decode(raw_label[0] + raw_label[1], encoding="gb2312")
-        # # Create an array of bytes for the image, match it to the proper dimensions, and turn it into an image.
-        # image = fromarray(np.array(photo_bytes, dtype=np.uint8).reshape(height, width))
-        #
-        # yield image, label
-
-print(len(train_chinese))
-# len(test_chinese)
 
