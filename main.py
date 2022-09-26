@@ -1,12 +1,18 @@
 import os
 import struct
-from codecs import decode
+import glob
+from matplotlib import pyplot as plt
 
-filename = "./data/C001-f.pot"
+
+###############################################################################
+def create_dir(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 
+###############################################################################
 def get_file_datapoint_list(file_path):
-    with open(filename, "rb") as f:
+    with open(file_path, "rb") as f:
 
         file_list = []
         datapoint_nbr = 0
@@ -67,32 +73,43 @@ def get_file_datapoint_list(file_path):
     return file_list
 
 
-test = get_file_datapoint_list(filename)
+# root_dir = "./data/competition_POT"
+# filename = "C001-f.pot"
 
-# import json
-#
-# with open(os.path.join('name.json'), 'w') as fp:
-#     json.dump(test, fp)
-# fp.close()
+# file_path = os.path.join(root_dir, filename)
 
-import glob
-from matplotlib import pyplot as plt
 
 file_dir = os.path.join("data", "competition_POT", '*')
-all_files = glob.glob(file_dir)
+all_files = sorted(glob.glob(file_dir))
 
-example = test[0]
-example_coordinates = example["stroke_coord"]
+for file in all_files:
 
-print(example['char'])
-import copy
+    individual_id = os.path.splitext(file)[0]
+    save_dir = os.path.join('data', 'plots', individual_id)
 
-for i, coords in example_coordinates.items():
+    print(file)
 
-    X, Y = zip(*coords)
-    X = list(X)
-    y_max = (max(Y))
-    Y = [-y for y in Y]
-    plt.plot(X, Y, '-')
-    
-plt.show()
+    file_info = get_file_datapoint_list(file)
+
+    for dtpt_nbr, datapoint_info in enumerate(file_info):
+
+        example_coordinates = datapoint_info["stroke_coord"]
+
+        char = datapoint_info['char']
+        # print(char)
+        for i, coords in example_coordinates.items():
+            X, Y = zip(*coords)
+            X = list(X)
+            y_max = (max(Y))
+            Y = [-y for y in Y]
+            plt.plot(X, Y, '-k')
+
+        plt.axis('off')
+
+
+        create_dir(save_dir)
+        try:
+            save_path = os.path.join(save_dir, char + '.jpg')
+            plt.savefig(save_path)
+        except:
+            print("couldn't process", save_path)
